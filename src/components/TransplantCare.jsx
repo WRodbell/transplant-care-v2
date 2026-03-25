@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, Tooltip, ResponsiveContainer } from "recharts";
 
 // ─── PHASE & SCORING LOGIC ─────────────────────────────────────────
 const PHASES = [
@@ -288,8 +289,19 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary)
 .landing-feature-card p{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:0}
 .landing-footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);margin-top:40px}
 .landing-footer p{font-size:13px;color:var(--text-muted)}
+.preview-carousel{margin-top:48px}
+.preview-carousel-inner{border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow-lg);overflow:hidden;background:var(--surface)}
+.preview-carousel-img{width:100%;display:block}
+.preview-carousel-controls{display:flex;justify-content:center;gap:8px;margin-top:16px}
+.preview-carousel-btn{padding:8px 20px;border-radius:20px;border:2px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;font-family:var(--font-body);color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.preview-carousel-btn:hover{border-color:var(--accent);color:var(--text-primary)}
+.preview-carousel-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+.onboarding-previews{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.onboarding-preview{text-align:center}
+.onboarding-preview img{width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.onboarding-preview span{display:block;margin-top:6px;font-size:11px;font-weight:600;color:var(--text-muted)}
 .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-@media(max-width:768px){.grid{grid-template-columns:1fr}.app-container{padding:0 16px 80px}.header-title{font-size:18px}.phase-name{font-size:28px}.symptom-grid{grid-template-columns:1fr}.about-panel{padding:24px}.onboarding-card{padding:28px}.header{flex-wrap:wrap;gap:8px}.header-right{flex-wrap:wrap}.landing-hero h1{font-size:34px}.landing-hero{padding:40px 16px 48px}.landing-hero-img{width:200px;height:140px}.landing-features{grid-template-columns:1fr}.landing-nav a{display:none}.landing-hero p{font-size:16px}.form-row-2{grid-template-columns:1fr}}
+@media(max-width:768px){.grid{grid-template-columns:1fr}.app-container{padding:0 16px 80px}.header-title{font-size:18px}.phase-name{font-size:28px}.symptom-grid{grid-template-columns:1fr}.about-panel{padding:24px}.onboarding-card{padding:28px}.header{flex-wrap:wrap;gap:8px}.header-right{flex-wrap:wrap}.landing-hero h1{font-size:34px}.landing-hero{padding:40px 16px 48px}.landing-hero-img{width:200px;height:140px}.onboarding-previews{grid-template-columns:1fr}.landing-features{grid-template-columns:1fr}.landing-nav a{display:none}.landing-hero p{font-size:16px}.form-row-2{grid-template-columns:1fr}}
 `;
 
 // ─── STORAGE HELPERS ───────────────────────────────────────────────
@@ -309,34 +321,34 @@ const DEFAULT_PATIENT = {
 };
 
 // ─── ALC CHART ─────────────────────────────────────────────────────
+const ALC_THRESHOLDS = [
+  { value: 0.2, label: "P1", color: "#E94B35" },
+  { value: 0.8, label: "P2", color: "#E07D1A" },
+  { value: 1.0, label: "P3", color: "#D4A017" },
+  { value: 1.3, label: "Cleared", color: "#2E8B57" },
+];
+
 function ALCChart({ history }) {
   if (!history?.length) return (
-    <div style={{ height: 180, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: 13, background: "var(--surface-alt)", borderRadius: "var(--radius-sm)" }}>
+    <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: 13, background: "var(--surface-alt)", borderRadius: "var(--radius-sm)" }}>
       ALC data will appear here after logging values
     </div>
   );
-  const max = 1.6;
-  const thresholds = [{ v: 0.2, l: "P1", c: "var(--red)" },{ v: 0.8, l: "P2", c: "var(--orange)" },{ v: 1.0, l: "P3", c: "var(--yellow)" },{ v: 1.3, l: "Cleared", c: "var(--green)" }];
-  const h = 160;
+  const data = history.map(pt => ({ name: pt.date.replace("Week ", "W"), alc: pt.alc }));
   return (
-    <div className="alc-chart" style={{ height: h + 30 }}>
-      {[0,0.4,0.8,1.2,1.6].map(v=><span key={v} className="alc-y-label" style={{bottom:(v/max)*h+8}}>{v.toFixed(1)}</span>)}
-      <div className="alc-chart-area">
-        {thresholds.map(t=><div key={t.l} className="alc-threshold" style={{bottom:`${(t.v/max)*100}%`,borderColor:t.c,color:t.c}}><span style={{position:"absolute",right:0,top:-14,fontSize:10,opacity:.7}}>{t.l} &ge;{t.v}</span></div>)}
-        {history.map((pt,i)=>{
-          const x=history.length===1?50:(i/(history.length-1))*90+5;
-          const y=(pt.alc/max)*100;
-          return <div key={i}><div className="alc-point" style={{left:`${x}%`,bottom:`${y}%`}} title={`${pt.date}: ${pt.alc} K/\u00B5L`}/><span className="alc-x-label" style={{left:`${x}%`}}>{pt.date.replace("Week ","W")}</span></div>;
-        })}
-        <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",overflow:"visible"}}>
-          {history.length>1&&history.map((pt,i)=>{
-            if(!i)return null;
-            const x1=((i-1)/(history.length-1))*90+5, y1=100-(history[i-1].alc/max)*100;
-            const x2=(i/(history.length-1))*90+5, y2=100-(pt.alc/max)*100;
-            return <line key={i} x1={`${x1}%`} y1={`${y1}%`} x2={`${x2}%`} y2={`${y2}%`} stroke="var(--accent)" strokeWidth="2" strokeLinecap="round"/>;
-          })}
-        </svg>
-      </div>
+    <div style={{ width: "100%", height: 220, marginTop: 8 }}>
+      <ResponsiveContainer>
+        <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#E8E5E0" />
+          <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#9C9890" }} tickLine={false} />
+          <YAxis domain={[0, 1.6]} ticks={[0, 0.4, 0.8, 1.2, 1.6]} tick={{ fontSize: 11, fill: "#9C9890" }} tickLine={false} axisLine={false} />
+          {ALC_THRESHOLDS.map(t => (
+            <ReferenceLine key={t.label} y={t.value} stroke={t.color} strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: `${t.label} \u2265${t.value}`, position: "right", fontSize: 10, fill: t.color, opacity: 0.8 }} />
+          ))}
+          <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E8E5E0" }} formatter={(v) => [`${v} K/\u00B5L`, "ALC"]} />
+          <Line type="monotone" dataKey="alc" stroke="#4A6274" strokeWidth={2} dot={{ r: 4, fill: "#4A6274", strokeWidth: 0 }} activeDot={{ r: 6, fill: "#4A6274" }} />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -372,6 +384,27 @@ function AboutPanel({onClose}) {
   );
 }
 
+// ─── APP PREVIEW CAROUSEL ──────────────────────────────────────────
+function AppPreviewCarousel() {
+  const [active, setActive] = useState(0);
+  const slides = [
+    { src: "/patient-view.png", alt: "TransplantCare patient dashboard", label: "Patient View" },
+    { src: "/partner-view.png", alt: "TransplantCare partner dashboard", label: "Partner View" },
+  ];
+  return (
+    <div className="preview-carousel">
+      <div className="preview-carousel-inner">
+        <img src={slides[active].src} alt={slides[active].alt} className="preview-carousel-img" />
+      </div>
+      <div className="preview-carousel-controls">
+        {slides.map((s, i) => (
+          <button key={i} className={`preview-carousel-btn ${active === i ? "active" : ""}`} onClick={() => setActive(i)}>{s.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── LANDING PAGE ──────────────────────────────────────────────────
 function LandingPage({ onTryNow }) {
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -385,6 +418,7 @@ function LandingPage({ onTryNow }) {
           <nav className="landing-nav">
             <a onClick={() => scrollTo("problem")}>The Problem</a>
             <a onClick={() => scrollTo("features")}>Features</a>
+            <a onClick={() => scrollTo("story")}>My Story</a>
             <button className="btn btn-orange" onClick={onTryNow}>Try Now</button>
           </nav>
         </div>
@@ -442,7 +476,16 @@ function LandingPage({ onTryNow }) {
             <p>Quick access to respiratory illness surveillance data for your metro area, so you can adjust behavior to local conditions.</p>
           </div>
         </div>
+        <AppPreviewCarousel />
       </section>
+
+      <div className="landing-section-alt">
+        <section id="story" className="landing-section">
+          <h2>Why I Built This</h2>
+          <p>I received a kidney transplant and experienced this problem firsthand. My partner and I found ourselves constantly asking: &ldquo;Can we have people over yet? What should she do differently after a work event? Do we need to mask at the grocery store?&rdquo;</p>
+          <p>Then a little over a year later I went into rejection and was admitted to the hospital where I had to effectively restart my post-transplant immunosuppression protocol from scratch. During my hospital admission I built this app, both for myself but also for my girlfriend, family and friends to provide more clarity and transparency around recovery.</p>
+        </section>
+      </div>
 
       <div className="landing-footer">
         <p>A portfolio project by a kidney transplant recipient. Not a production health tool.</p>
@@ -814,9 +857,10 @@ export default function TransplantCare() {
               <div key={k} className={`exposure-option ${c} ${selExp===k?"selected":""}`} onClick={()=>setSelExp(k)}><div className="exposure-title">{t}</div><div className="exposure-desc">{d}</div></div>
             )}
             <button className="btn btn-primary" style={{width:"100%",marginTop:8,padding:"10px 20px"}} disabled={!selExp} onClick={handleSubmitExp}>Submit Assessment</button>
-            {assessments.length>0&&<div className="assessment-log"><div style={{fontSize:13,fontWeight:600,marginBottom:8}}>Recent Assessments</div>
-              {assessments.map((a,i)=><div key={i} className="assessment-entry"><span><span className="assessment-dot" style={{background:a.level==="GREEN"?"var(--green)":a.level==="YELLOW"?"var(--yellow)":"var(--red)"}}/>{a.level}</span><span style={{color:"var(--text-muted)",fontSize:12}}>{a.date}</span></div>)}
-            </div>}
+            <div className="assessment-log"><div style={{fontSize:13,fontWeight:600,marginBottom:8}}>Recent Assessments</div>
+              {assessments.length>0 ? assessments.map((a,i)=><div key={i} className="assessment-entry"><span><span className="assessment-dot" style={{background:a.level==="GREEN"?"var(--green)":a.level==="YELLOW"?"var(--yellow)":"var(--red)"}}/>{a.level}</span><span style={{color:"var(--text-muted)",fontSize:12}}>{a.date}</span></div>)
+              : <div className="no-data-msg" style={{marginTop:4}}>No assessments yet &mdash; submit your first one above.</div>}
+            </div>
           </div>
 
           <div className="card grid-full">

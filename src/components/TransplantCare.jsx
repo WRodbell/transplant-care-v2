@@ -6,7 +6,7 @@ const PHASES = [
   { name: "Phase 1", alcMin: 0.2, label: "HIGH RISK", color: "#E94B35", bg: "#FEF0EE" },
   { name: "Phase 2", alcMin: 0.8, label: "MODERATE RISK", color: "#E07D1A", bg: "#FFF5EB" },
   { name: "Phase 3", alcMin: 1.0, label: "LOW RISK", color: "#D4A017", bg: "#FFFBE6" },
-  { name: "Clear", alcMin: 1.3, label: "CLEARED", color: "#5B7B8F", bg: "#EDF2F5" },
+  { name: "Cleared", alcMin: 1.3, label: "CLEARED", color: "#2E8B57", bg: "#EAF6EF" },
 ];
 
 function getPhase(alc) {
@@ -39,7 +39,7 @@ const PROTOCOLS = {
     { icon: "\u{1F637}", text: "Mask during high community illness (optional otherwise)", type: "info" },
     { icon: "\u{1F9EA}", text: "Test if symptomatic or known exposure", type: "warning" },
   ],
-  Clear: [
+  Cleared: [
     { icon: "\u2705", text: "Resume normal social activities", type: "info" },
     { icon: "\u{1F48A}", text: "Continue all medications as prescribed", type: "warning" },
     { icon: "\u{1F4CB}", text: "Maintain follow-up schedule with transplant team", type: "info" },
@@ -67,7 +67,7 @@ const PARTNER_PROTOCOLS = {
     exposure: { GREEN: "Normal home life.", YELLOW: "Standard hygiene. Monitor for symptoms.", RED: "Rapid test if symptomatic. Brief masking if positive." },
     baseline: ["Wash hands regularly", "Basic hygiene practices"],
   },
-  Clear: {
+  Cleared: {
     summary: "Patient has been cleared. Resume normal household routines.",
     exposure: { GREEN: "Normal life.", YELLOW: "Normal life. Monitor for symptoms.", RED: "Standard illness precautions." },
     baseline: ["Standard household hygiene"],
@@ -75,24 +75,24 @@ const PARTNER_PROTOCOLS = {
 };
 
 const COMMUNITY_CITIES = [
-  { name: "Los Angeles", url: "http://ph.lacounty.gov/acd/respwatch/" },
-  { name: "San Francisco", url: "https://www.sf.gov/respiratory-virus-hospitalizations" },
-  { name: "San Diego", url: "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/phs/community_epidemiology/dc/respiratoryviruses/surveillance.html" },
-  { name: "Seattle", url: "https://kingcounty.gov/en/dept/dph/health-safety/disease-illness/respiratory-virus-data" },
-  { name: "Denver", url: "https://cdphe.colorado.gov/dcphr/wastewater" },
-  { name: "Houston", url: "https://texas-respiratory-illness-dashboard-txdshsea.hub.arcgis.com" },
-  { name: "Dallas", url: "https://texas-respiratory-illness-dashboard-txdshsea.hub.arcgis.com" },
-  { name: "Austin", url: "https://texas-respiratory-illness-dashboard-txdshsea.hub.arcgis.com" },
-  { name: "Miami", url: "https://www.floridahealth.gov/diseases-and-conditions/?category=respiratory" },
-  { name: "New York City", url: "https://nyshc.health.ny.gov/web/nyapd/new-york-state-flu-tracker" },
-  { name: "Boston", url: "https://www.boston.gov/government/cabinets/boston-public-health-commission/respiratory-diseases-dashboard" },
-  { name: "Philadelphia", url: "https://hip.phila.gov/data-reports-statistics/respiratory-viruses/respiratory-virus-archive/weekly-reports_2022/" },
-  { name: "Washington D.C.", url: "https://dchealth.dc.gov/page/influenza-surveillance-dashboard" },
-  { name: "Minneapolis", url: "https://www.health.state.mn.us/diseases/flu/stats/index.html" },
-  { name: "Chicago", url: "https://www.chicago.gov/city/en/depts/cdph/supp_info/infectious/respiratory-illness/respiratory-illness-data.html" },
   { name: "Atlanta", url: "https://dph.georgia.gov/epidemiology/acute-disease-epidemiology/viral-respiratory-diseases" },
+  { name: "Austin", url: "https://texas-respiratory-illness-dashboard-txdshsea.hub.arcgis.com" },
+  { name: "Boston", url: "https://www.boston.gov/government/cabinets/boston-public-health-commission/respiratory-diseases-dashboard" },
+  { name: "Chicago", url: "https://www.chicago.gov/city/en/depts/cdph/supp_info/infectious/respiratory-illness/respiratory-illness-data.html" },
+  { name: "Dallas", url: "https://texas-respiratory-illness-dashboard-txdshsea.hub.arcgis.com" },
+  { name: "Denver", url: "https://cdphe.colorado.gov/dcphr/wastewater" },
   { name: "Detroit", url: "https://www.michigan.gov/mdhhs/keep-mi-healthy/communicable-diseases/respiratory-illness-surveillance" },
+  { name: "Houston", url: "https://texas-respiratory-illness-dashboard-txdshsea.hub.arcgis.com" },
+  { name: "Los Angeles", url: "http://ph.lacounty.gov/acd/respwatch/" },
+  { name: "Miami", url: "https://www.floridahealth.gov/diseases-and-conditions/?category=respiratory" },
+  { name: "Minneapolis", url: "https://www.health.state.mn.us/diseases/flu/stats/index.html" },
+  { name: "New York City", url: "https://nyshc.health.ny.gov/web/nyapd/new-york-state-flu-tracker" },
+  { name: "Philadelphia", url: "https://hip.phila.gov/data-reports-statistics/respiratory-viruses/respiratory-virus-archive/weekly-reports_2022/" },
   { name: "Phoenix", url: "https://www.maricopa.gov/1872/Respiratory-Virus-Surveillance" },
+  { name: "San Diego", url: "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/phs/community_epidemiology/dc/respiratoryviruses/surveillance.html" },
+  { name: "San Francisco", url: "https://www.sf.gov/respiratory-virus-hospitalizations" },
+  { name: "Seattle", url: "https://kingcounty.gov/en/dept/dph/health-safety/disease-illness/respiratory-virus-data" },
+  { name: "Washington D.C.", url: "https://dchealth.dc.gov/page/influenza-surveillance-dashboard" },
   { name: "Other", url: "https://www.cdc.gov/respiratory-viruses/data/activity-levels.html" },
 ];
 
@@ -147,7 +147,7 @@ if (typeof document !== "undefined") {
 }
 
 const CSS = `
-:root{--bg:#F8F7F4;--surface:#FFF;--surface-alt:#F2F0ED;--border:#E8E5E0;--border-hover:#D1CEC8;--text-primary:#1A1918;--text-secondary:#6B6762;--text-muted:#9C9890;--accent:#4A6274;--accent-light:#EDF1F4;--red:#E94B35;--red-bg:#FEF0EE;--orange:#E07D1A;--orange-bg:#FFF5EB;--yellow:#D4A017;--yellow-bg:#FFFBE6;--green:#5B7B8F;--green-bg:#EDF2F5;--font-body:'DM Sans',-apple-system,sans-serif;--font-display:'DM Serif Display',Georgia,serif;--shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow-md:0 2px 8px rgba(0,0,0,.06);--shadow-lg:0 4px 16px rgba(0,0,0,.08);--radius:12px;--radius-sm:8px}
+:root{--bg:#F8F7F4;--surface:#FFF;--surface-alt:#F2F0ED;--border:#E8E5E0;--border-hover:#D1CEC8;--text-primary:#1A1918;--text-secondary:#6B6762;--text-muted:#9C9890;--accent:#4A6274;--accent-light:#EDF1F4;--red:#E94B35;--red-bg:#FEF0EE;--orange:#E07D1A;--orange-bg:#FFF5EB;--yellow:#D4A017;--yellow-bg:#FFFBE6;--green:#2E8B57;--green-bg:#EAF6EF;--font-body:'DM Sans',-apple-system,sans-serif;--font-display:'DM Serif Display',Georgia,serif;--shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow-md:0 2px 8px rgba(0,0,0,.06);--shadow-lg:0 4px 16px rgba(0,0,0,.08);--radius:12px;--radius-sm:8px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);-webkit-font-smoothing:antialiased}
 .app-container{max-width:1120px;margin:0 auto;padding:0 24px 80px}
@@ -184,8 +184,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary)
 .btn-primary{background:var(--accent);color:#fff}
 .btn-primary:hover{background:#3B5163}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed}
-.btn-orange{background:#E07D1A;color:#fff}
-.btn-orange:hover{background:#C96A0E}
+.btn-orange{background:#ff9d38;color:#fff}
+.btn-orange:hover{background:#ff7918}
 .btn-ghost{background:0 0;color:var(--text-secondary);border:1px solid var(--border)}
 .btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary)}
 .protocol-list{display:flex;flex-direction:column;gap:8px}
@@ -210,7 +210,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary)
 .alc-x-label{position:absolute;bottom:-20px;font-size:10px;color:var(--text-muted);transform:translateX(-50%)}
 .exposure-option{padding:12px 16px;border-radius:var(--radius-sm);border:2px solid transparent;cursor:pointer;margin-bottom:8px;transition:all .15s}
 .exposure-option:hover{transform:translateX(2px)}
-.exposure-option.green{background:#EEF2F5;border-color:#C4D3DC}
+.exposure-option.green{background:#EAF6EF;border-color:#A8D5BA}
 .exposure-option.yellow{background:#FFFCE8;border-color:#F0E4A8}
 .exposure-option.red{background:#FFF0EE;border-color:#F4C4BC}
 .exposure-option.selected.green{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
@@ -316,7 +316,7 @@ function ALCChart({ history }) {
     </div>
   );
   const max = 1.6;
-  const thresholds = [{ v: 0.2, l: "P1", c: "var(--red)" },{ v: 0.8, l: "P2", c: "var(--orange)" },{ v: 1.0, l: "P3", c: "var(--yellow)" },{ v: 1.3, l: "Clear", c: "var(--green)" }];
+  const thresholds = [{ v: 0.2, l: "P1", c: "var(--red)" },{ v: 0.8, l: "P2", c: "var(--orange)" },{ v: 1.0, l: "P3", c: "var(--yellow)" },{ v: 1.3, l: "Cleared", c: "var(--green)" }];
   const h = 160;
   return (
     <div className="alc-chart" style={{ height: h + 30 }}>
@@ -578,7 +578,7 @@ function Onboarding({onComplete, onBack}) {
           <p>Share this code with your partner so they can link to your dashboard:</p>
           <div className="share-code">{shareCode}</div>
           <div className="share-code-label">Partner share code</div>
-          <p style={{fontSize:12,color:"var(--text-muted)",textAlign:"center"}}>Your partner will need this code when they set up their account. Write it down. Do not lose it.</p>
+          <p style={{fontSize:12,color:"var(--red)",textAlign:"center",fontWeight:500}}>Your partner will need this code when they set up their account. Write it down. Do not lose it.</p>
           <button className="btn btn-primary" style={{width:"100%",padding:12,marginTop:12}} onClick={async()=>{const p=await sGet("tc-profile");onComplete(p);}}>Go to Dashboard</button>
         </>}
         {step==="link"&&<>
@@ -709,7 +709,7 @@ export default function TransplantCare() {
           </div>
           <div className="header-right">
             <div className="phase-badge" style={{background:phase.bg,color:phase.color}}>
-              <span style={{width:8,height:8,borderRadius:"50%",background:phase.color,display:"inline-block"}}/>{phase.name} &middot; {phase.label}
+              <span style={{width:8,height:8,borderRadius:"50%",background:phase.color,display:"inline-block"}}/>{phase.name === "Cleared" ? phase.label : `${phase.name} \u00B7 ${phase.label}`}
             </div>
             <div className="user-pill">
               {isPat?"\u{1F3E5}":"\u{1F49A}"} {profile.name||(isPat?"Patient":"Partner")}
@@ -820,7 +820,7 @@ export default function TransplantCare() {
           </div>
 
           <div className="card grid-full">
-            <div className="card-header"><div className="card-title">Patient Current Status</div><span className="status-pill" style={{background:phase.bg,color:phase.color}}>{phase.name} &middot; {phase.label}</span></div>
+            <div className="card-header"><div className="card-title">Patient Current Status</div><span className="status-pill" style={{background:phase.bg,color:phase.color}}>{phase.name === "Cleared" ? phase.label : `${phase.name} \u00B7 ${phase.label}`}</span></div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))",gap:16}}>
               <div><div className="form-label">ALC Level</div><div style={{fontSize:20,fontWeight:600,marginTop:4}}>{pd.alc.toFixed(2)} <span style={{fontSize:13,color:"var(--text-muted)"}}>K/&micro;L</span></div></div>
               <div><div className="form-label">Weeks Post-ATG</div><div style={{fontSize:20,fontWeight:600,marginTop:4}}>{pd.weeksPostATG}</div></div>
